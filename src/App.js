@@ -1,23 +1,21 @@
-import logo from './logo.svg';
 import './App.css';
+import { FormControl, MenuItem, Select } from '@material-ui/core';
+import { FormContext } from 'antd/lib/form/context';
+
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    div.app_header
+    
+     <h1>COVID 19 TRACKER</h1>
+     <FormControl>
+       <Select variant="outlined" value='abc'>
+         <MenuItem value="worldwide">1 hey do it</MenuItem>
+         <MenuItem value="worldwide">2 ok google</MenuItem>
+         <MenuItem value="worldwide">3 dream11</MenuItem>
+       </Select>
+     </FormControl>
     </div>
   );
 }
