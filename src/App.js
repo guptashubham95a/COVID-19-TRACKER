@@ -1,14 +1,14 @@
-import './App.css';
-import {FormControl, MenuItem, Select, Card, CardContent} from '@material-ui/core';
-import {FormContext} from 'antd/lib/form/context';
-import {useEffect, useState} from 'react';
-import InfoBox from './InfoBox';
-import {light} from '@material-ui/core/styles/createPalette';
-import Map from './Map';
+import React, {useState, useEffect} from "react";
+import "./App.css";
+import {MenuItem, FormControl, Select, Card, CardContent} from "@material-ui/core";
+import InfoBox from "./InfoBox";
+import LineGraph from "./LineGraph";
+import Table from "./Table";
+import {sortData, prettyPrintStat} from "./util";
+import numeral from "numeral";
+import Map from "./Map";
+import "leaflet/dist/leaflet.css";
 import Typewriter from 'typewriter-effect';
-import { sortData } from './util';
-import Table from './Table'
-import LineGraph from './LineGraph';
 
 function App() {
 
@@ -20,7 +20,12 @@ function App() {
     setCountryInfo] = useState({})
   const [tableData,
     settableData] = useState([])
-
+  const [mapCenter,
+    setmapCenter] = useState({lat: 34.80746, lng: -40.4796})
+  const [mapZoom,
+    setMapZoom] = useState(3)
+  const [mapCountries,
+    setMapCountries] = useState([])
   // making call to disease API for fetching data for each country.abs
   // https://disease.sh/v3/covid-19/countries
   useEffect(() => {
@@ -35,9 +40,10 @@ function App() {
     const getCountriesData = async() => {
       await fetch("https://disease.sh/v3/covid-19/countries").then((response) => response.json()).then((data) => {
         const countries = data.map((country) => ({name: country.country, value: country.countryInfo.iso2}))
-        
-        const sortedData=sortData(data);
+
+        const sortedData = sortData(data);
         settableData(sortedData);
+        setMapCountries(data)
         setCountries(countries);
       })
 
@@ -60,6 +66,9 @@ function App() {
         //  Storing all the data for country or World-wide into countryInfo state.
         setCountry(countryCode)
         setCountryInfo(data)
+
+        setmapCenter([data.countryInfo.lat, data.countryInfo.long])
+        setMapZoom(4)
       })
   }
   return (
@@ -95,34 +104,36 @@ function App() {
           <InfoBox
             title="Coronavirus Cases"
             cases={countryInfo.todayCases}
-            total={countryInfo.cases}></InfoBox>
+            total={countryInfo.cases}/>
 
           <InfoBox
             title="Recovered"
             cases={countryInfo.todayRecovered}
-            total={countryInfo.recovered}></InfoBox>
+            total={countryInfo.recovered}/>
 
           <InfoBox
             title="Deaths"
             cases={countryInfo.todayDeaths}
-            total={countryInfo.deaths}></InfoBox>
+            total={countryInfo.deaths}/>
         </div>
-        <Map/>
+        <Map countries={mapCountries} center={mapCenter} zoom={mapZoom}/>
 
       </div>
 
       <div className="app_right">
         <Card >
           <CardContent>
-            <h3>
-              Live cases by Country
-            </h3>
-            <Table countries={tableData}>
+            <div className="app__information">
+              <h3>
+                Live cases by Country
+              </h3>
+              <Table countries={tableData}></Table>
+              <h3>
+                Worlwide new cases
+              </h3>
 
-            </Table>
-            <h3>
-              Worlwide new cases
-            </h3>
+            </div>
+
             <LineGraph/>
           </CardContent>
         </Card>
